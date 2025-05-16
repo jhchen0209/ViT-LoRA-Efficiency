@@ -1,4 +1,3 @@
-# vit_lora_pytorch.py
 import os
 import time
 import torch
@@ -12,10 +11,6 @@ from transformers import ViTForImageClassification, ViTImageProcessor
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
-
-# ----------------------
-# LoRA 模組
-# ----------------------
 class LoRALinear(nn.Module):
     def __init__(self, in_features, out_features, r=8, lora_alpha=16, dropout=0.1):
         super().__init__()
@@ -59,10 +54,6 @@ def apply_lora_to_vit(model, target_modules=["attention.query", "attention.value
                     lora_layer.bias.data.copy_(old_layer.bias.data)
                     setattr(parent, subnames[-1], lora_layer)
 
-
-# ----------------------
-# Dataset 與預處理
-# ----------------------
 class ImageDataset(Dataset):
     def __init__(self, image_paths, labels, transform):
         self.image_paths = image_paths
@@ -93,10 +84,6 @@ def load_data(data_dir):
         labels.append(class_to_idx[class_name])
     return image_paths, labels, class_names
 
-
-# ----------------------
-# 訓練與驗證
-# ----------------------
 def train(model, loader, optimizer, device):
     model.train()
     total_loss = 0
@@ -126,10 +113,6 @@ def evaluate(model, loader, device):
             correct += (outputs.logits.argmax(dim=-1) == y).sum().item()
     return total_loss / len(loader.dataset), correct / len(loader.dataset)
 
-
-# ----------------------
-# 主程式邏輯
-# ----------------------
 def main():
     data_dir = "./DATA/images"
     image_paths, labels, class_names = load_data(data_dir)
@@ -168,7 +151,6 @@ def main():
     elapsed = time.time() - start_time
     print(f"訓練完成，總耗時: {elapsed:.2f} 秒")
 
-    # 額外輸出模型參數資訊
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"\n=== 模型參數統計 ===")
